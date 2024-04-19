@@ -1,5 +1,4 @@
 import os
-import json
 from flask import Flask, request, jsonify
 from ultralytics import YOLO
 
@@ -29,16 +28,17 @@ def predict():
         if 'file' not in request.files: return jsonify({'error': 'No file provided'})
         
         file = request.files['file']
+        
+        if file.filename == '': return jsonify({'error': 'No selected file'})
+        if not allowed_file(file.filename): return jsonify({'error': 'Invalid file type'})
+        
         filePath = os.path.join(app.config['uploadFolder'], file.filename)
         file.save(filePath)
 
-        if file.filename == '': return jsonify({'error': 'No selected file'})
-        if not allowed_file(file.filename): return jsonify({'error': 'Invalid file type'})
-
         res = model(filePath)
         res = res[0].boxes.xywh.numpy()
-
         os.remove(filePath)
+
         return jsonify({'boxes': res.tolist()})
     except Exception as e:
         return jsonify({'error': e})
