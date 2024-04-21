@@ -2,8 +2,8 @@
 # Builds ultralytics/ultralytics:latest-cpu image on DockerHub https://hub.docker.com/r/ultralytics/ultralytics
 # Image is CPU-optimized for ONNX, OpenVINO and PyTorch YOLOv8 deployments
 
-# Start FROM Ubuntu image https://hub.docker.com/_/ubuntu
-FROM ubuntu:23.10
+# Use the official Python 3.10 slim-bookworm as base image
+FROM python:3.10-slim-bookworm
 
 # Downloads to user config dir
 ADD https://github.com/ultralytics/assets/releases/download/v0.0.0/Arial.ttf \
@@ -24,7 +24,7 @@ RUN git clone https://github.com/ultralytics/ultralytics -b main /usr/src/ultral
 ADD https://github.com/ultralytics/assets/releases/download/v8.2.0/yolov8n.pt /usr/src/ultralytics/
 
 # Remove python3.11/EXTERNALLY-MANAGED or use 'pip install --break-system-packages' avoid 'externally-managed-environment' Ubuntu nightly error
-RUN rm -rf /usr/lib/python3.11/EXTERNALLY-MANAGED
+# RUN rm -rf /usr/lib/python3.11/EXTERNALLY-MANAGED
 
 # Install pip packages
 RUN python3 -m pip install --upgrade pip wheel
@@ -34,13 +34,9 @@ RUN pip install --no-cache -e ".[export]" --extra-index-url https://download.pyt
 RUN yolo export model=tmp/yolov8n.pt format=edgetpu imgsz=32
 RUN yolo export model=tmp/yolov8n.pt format=ncnn imgsz=32
 # Requires <= Python 3.10, bug with paddlepaddle==2.5.0 https://github.com/PaddlePaddle/X2Paddle/issues/991
-# RUN pip install --no-cache paddlepaddle>=2.6.0 x2paddle
+RUN pip install --no-cache paddlepaddle>=2.6.0 x2paddle
 # Remove exported models
 RUN rm -rf tmp
-
-# Creates a symbolic link to make 'python' point to 'python3'
-RUN ln -sf /usr/bin/python3 /usr/bin/python
-
 
 COPY . /usr/src/ultralytics
 
