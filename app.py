@@ -14,7 +14,6 @@ app = Flask(__name__)
 app.config['uploadFolder'] = Upload
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg'}
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
