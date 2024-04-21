@@ -42,16 +42,12 @@ RUN rm -rf tmp
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 
-# Usage Examples -------------------------------------------------------------------------------------------------------
+COPY . /usr/src/ultralytics
 
-# Build and Push
-# t=ultralytics/ultralytics:latest-cpu && sudo docker build -f docker/Dockerfile-cpu -t $t . && sudo docker push $t
+RUN pip install -r requirements.txt
 
-# Run
-# t=ultralytics/ultralytics:latest-cpu && sudo docker run -it --ipc=host --name NAME $t
+ENV FLASK_APP=app.py
 
-# Pull and Run
-# t=ultralytics/ultralytics:latest-cpu && sudo docker pull $t && sudo docker run -it --ipc=host --name NAME $t
+EXPOSE 8080
 
-# Pull and Run with local volume mounted
-# t=ultralytics/ultralytics:latest-cpu && sudo docker pull $t && sudo docker run -it --ipc=host -v "$(pwd)"/datasets:/usr/src/datasets $t
+CMD ["python", "app.py"]
