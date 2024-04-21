@@ -1,5 +1,9 @@
-FROM pytorch/pytorch:2.2.2-cuda12.1-cudnn8-runtime
-RUN pip install --no-cache nvidia-tensorrt --index-url https://pypi.ngc.nvidia.com
+# Ultralytics YOLO 🚀, AGPL-3.0 license
+# Builds ultralytics/ultralytics:latest-cpu image on DockerHub https://hub.docker.com/r/ultralytics/ultralytics
+# Image is CPU-optimized for ONNX, OpenVINO and PyTorch YOLOv8 deployments
+
+# Start FROM Ubuntu image https://hub.docker.com/_/ubuntu
+FROM ubuntu:23.10
 
 # Downloads to user config dir
 ADD https://github.com/ultralytics/assets/releases/download/v0.0.0/Arial.ttf \
@@ -9,11 +13,7 @@ ADD https://github.com/ultralytics/assets/releases/download/v0.0.0/Arial.ttf \
 # Install linux packages
 # g++ required to build 'tflite_support' and 'lap' packages, libusb-1.0-0 required for 'tflite_support' package
 RUN apt update \
-    && apt install --no-install-recommends -y gcc git zip curl htop libgl1 libglib2.0-0 libpython3-dev gnupg g++ libusb-1.0-0
-
-# Security updates
-# https://security.snyk.io/vuln/SNYK-UBUNTU1804-OPENSSL-3314796
-RUN apt upgrade --no-install-recommends -y openssl tar
+    && apt install --no-install-recommends -y python3-pip git zip curl htop libgl1 libglib2.0-0 libpython3-dev gnupg g++ libusb-1.0-0
 
 # Create working directory
 WORKDIR /usr/src/ultralytics
@@ -23,25 +23,24 @@ WORKDIR /usr/src/ultralytics
 RUN git clone https://github.com/ultralytics/ultralytics -b main /usr/src/ultralytics
 ADD https://github.com/ultralytics/assets/releases/download/v8.2.0/yolov8n.pt /usr/src/ultralytics/
 
+# Remove python3.11/EXTERNALLY-MANAGED or use 'pip install --break-system-packages' avoid 'externally-managed-environment' Ubuntu nightly error
+RUN rm -rf /usr/lib/python3.11/EXTERNALLY-MANAGED
+
 # Install pip packages
 RUN python3 -m pip install --upgrade pip wheel
-RUN pip install --no-cache -e ".[export]" albumentations comet pycocotools
+RUN pip install --no-cache -e ".[export]" --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Run exports to AutoInstall packages
-# Edge TPU export fails the first time so is run twice here
-RUN yolo export model=tmp/yolov8n.pt format=edgetpu imgsz=32 || yolo export model=tmp/yolov8n.pt format=edgetpu imgsz=32
+RUN yolo export model=tmp/yolov8n.pt format=edgetpu imgsz=32
 RUN yolo export model=tmp/yolov8n.pt format=ncnn imgsz=32
 # Requires <= Python 3.10, bug with paddlepaddle==2.5.0 https://github.com/PaddlePaddle/X2Paddle/issues/991
-RUN pip install --no-cache paddlepaddle>=2.6.0 x2paddle
-# Fix error: `np.bool` was a deprecated alias for the builtin `bool` segmentation error in Tests
-RUN pip install --no-cache numpy==1.23.5
+# RUN pip install --no-cache paddlepaddle>=2.6.0 x2paddle
 # Remove exported models
 RUN rm -rf tmp
 
-# Set environment variables
-ENV OMP_NUM_THREADS=1
-# Avoid DDP error "MKL_THREADING_LAYER=INTEL is incompatible with libgomp.so.1 library" https://github.com/pytorch/pytorch/issues/37377
-ENV MKL_THREADING_LAYER=GNU
+# Creates a symbolic link to make 'python' point to 'python3'
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+
 
 COPY . /usr/src/ultralytics
 
