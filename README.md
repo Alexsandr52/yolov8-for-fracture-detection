@@ -51,7 +51,7 @@ image_path = "путь/к/изображению.jpg"
 image_data = open(image_path, "rb").read()
 
 # Отправка HTTP POST запроса к сервису
-response = requests.post("http://localhost:5000/predict", files={"image": image_data})
+response = requests.post("http://localhost:8080/predict", files={"image": image_data})
 
 # Обработка ответа
 результаты_обнаружения = response.json()
