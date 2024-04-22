@@ -13,12 +13,12 @@
 
 ### Установка
 1. Склонируйте репозиторий:
-```bash:
+```bash
 git clone https://github.com/Alexsandr52/yolov8-for-fracture-detection
 cd yolov8-for-fracture-detection
 ```
 2. Соберите Docker образ:
-```bash:
+```bash
 docker build -t yolo-detection .
 ```
 
@@ -32,20 +32,20 @@ docker build -t yolo-detection .
 
 ### Запуск сервиса
 1. Убедитесь, что Docker контейнер запущен:
-```bash:
+```bash
 docker run -p 8080:8080 yolo-sdetection
 ```
 2. После запуска контейнера вы можете получить доступ к сервису по адресу http://localhost:8080. /predict - доступ к модели.
 Используя метод HTTP POST. Отправьте изображение в качестве данных для получения результатов обнаружения.
 
 ### Примеры использования
-```bash:
+```bash
 # Загрузка изображения и отправка HTTP POST запроса к сервису
 curl -X POST -F "file=@путь/к/изображению.jpg" http://localhost:8080/predict
 
 ```
 
-```python:
+```python
 import requests
 
 # Загрузка изображения
