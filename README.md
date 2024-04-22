@@ -40,7 +40,9 @@ docker run -p 8080:8080 yolo-sdetection
 
 ### Примеры использования
 ```bash:
-curl -X POST -F "file=@IMG0001780.jpg" http://localhost:8080/predict
+# Загрузка изображения и отправка HTTP POST запроса к сервису
+curl -X POST -F "file=@путь/к/изображению.jpg" http://localhost:8080/predict
+
 ```
 
 ```python:
@@ -48,14 +50,18 @@ import requests
 
 # Загрузка изображения
 image_path = "путь/к/изображению.jpg"
-image_data = open(image_path, "rb").read()
+image_data = open(image_path, "rb")
 
 # Отправка HTTP POST запроса к сервису
-response = requests.post("http://localhost:8080/predict", files={"image": image_data})
+files = {"image": image_data}
+response = requests.post("http://localhost:8080/predict", files=files)
 
 # Обработка ответа
-результаты_обнаружения = response.json()
-print(результаты_обнаружения)
+if response.status_code == 200:
+    detection_results = response.json()
+    print(detection_results)
+else:
+    print("Ошибка при отправке запроса:", response.status_code)
 
 ```
 
