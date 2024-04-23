@@ -1,4 +1,4 @@
 Flask==2.0.2
 Werkzeug==2.0.2
 opencv-python==4.9.0.80
-numpy
+numpy==1.26.4
