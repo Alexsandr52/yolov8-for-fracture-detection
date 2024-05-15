@@ -9,10 +9,8 @@ from flask import Flask, request, jsonify
 # curl -X POST -F "file=@IMG0001780.jpg" http://localhost:8080/predict
 
 model = YOLO('runs/detect/train/weights/best.pt')
+model_2 = YOLO('runs/detect/train/weights/classif/last (1).pt')
 app = Flask(__name__)
-
-# Upload = 'static/upload'
-# app.config['uploadFolder'] = Upload
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg'}
 def allowed_file(filename):
@@ -22,26 +20,9 @@ def allowed_file(filename):
 def index():
     return '''Author: Alexander Polyansky\n Title: Flask server with Yolov8\n Description: This is simple flask server with one method [post] "predict". \n Input data must be img file. Response will be json with coordinates or error message.'''
 
-# @app.route('/predict-local', methods=['POST'])
-# def predict_clear():
-#     try:
-#         if 'file' not in request.files: return jsonify({'error': 'No file provided'})
-        
-#         file = request.files['file']
-        
-#         if file.filename == '': return jsonify({'error': 'No selected file'})
-#         if not allowed_file(file.filename): return jsonify({'error': 'Invalid file type'})
-        
-#         filePath = os.path.join(app.config['uploadFolder'], file.filename)
-#         file.save(filePath)
-
-#         res = model(filePath)
-#         res = res[0].boxes.xywh.numpy()
-#         os.remove(filePath)
-
-#         return jsonify({'boxes': res.tolist()})
-#     except Exception as e:
-#         return jsonify({'error': e})
+def predict_part(image):
+        res = model_2(image)
+        return res
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -57,9 +38,12 @@ def predict():
         image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
         
         res = model(image)
-        res = res[0].boxes.xywh.numpy()
+        res2 = predict_part(image)
 
-        return jsonify({'boxes': res.tolist()})
+        res = res[0].boxes.xywh.numpy()
+        res2 = res2[0].probs.top1
+
+        return jsonify({'boxes': res.tolist(), 'results': res2})
     except Exception as e:
         return jsonify({'error': e})
 
