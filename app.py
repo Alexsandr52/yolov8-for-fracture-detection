@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 from ultralytics import YOLO
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 
 # docker build -t yolo-flask-app .
 # docker run -d -p 8080:8080 yolo-flask-app 
@@ -18,7 +18,7 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-    return '''Author: Alexander Polyansky\n Title: Flask server with Yolov8\n Description: This is simple flask server with one method [post] "predict". \n Input data must be img file. Response will be json with coordinates or error message.'''
+    return render_template('index.html')
 
 def predict_part(image):
         res = model_2(image)

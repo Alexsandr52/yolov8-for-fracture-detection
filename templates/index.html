@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fracture Detection AI - YOLOv8</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Fracture Detection AI</h1>
+            <p class="subtitle">Powered by YOLOv8 Deep Learning</p>
+        </header>
+
+        <section class="info-section">
+            <h2>About This Project</h2>
+            <p>This AI-powered tool detects fractures in X-ray images using advanced computer vision. Upload your X-ray image and get instant detection results with bounding boxes around potential fractures.</p>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Object Detection</h3>
+                    <p>YOLOv8-based detection model identifies potential fractures</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Classification</h3>
+                    <p>Secondary model classifies fracture types and severity</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Fast Inference</h3>
+                    <p>Get results in seconds with optimized processing pipeline</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="upload-section">
+            <h2>Upload X-Ray Image</h2>
+            <div class="upload-area" id="uploadArea">
+                <input type="file" id="fileInput" accept=".jpg,.jpeg" hidden>
+                <div class="upload-content">
+                    <div class="upload-icon">📁</div>
+                    <p class="upload-text">Drag & drop your X-ray image here</p>
+                    <p class="upload-subtext">or click to browse</p>
+                    <p class="upload-hint">Supported formats: JPG, JPEG</p>
+                </div>
+            </div>
+            <button id="uploadBtn" class="btn-primary" disabled>Analyze Image</button>
+        </section>
+
+        <section class="results-section" id="resultsSection" style="display: none;">
+            <h2>Detection Results</h2>
+            <div class="results-container">
+                <div class="image-preview">
+                    <h3>Original Image</h3>
+                    <img id="originalImage" alt="Uploaded X-ray">
+                </div>
+                <div class="detection-info">
+                    <h3>Analysis</h3>
+                    <div class="info-card">
+                        <div class="info-item">
+                            <span class="info-label">Status:</span>
+                            <span id="detectionStatus" class="status-badge">Processing...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Fractures Detected:</span>
+                            <span id="fractureCount">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Classification Result:</span>
+                            <span id="classificationResult">-</span>
+                        </div>
+                    </div>
+                    <div id="boundingBoxes" class="bounding-boxes-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Built with Flask, YOLOv8, and Deep Learning | Author: Alexander Polyansky</p>
+            <p class="tech-stack">Technologies: Python, Flask, OpenCV, Ultralytics YOLO, NumPy</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
